@@ -45,12 +45,14 @@ public class ValidationItemControllerV1 {
 
     @PostMapping("/add")
     public String addItem(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        // typeMissMatch의 경우에도 properties에서 설정 가능하다.
+        if(bindingResult.hasErrors()){
+            return "validation/v1/addForm";
+        }
+
         if(!StringUtils.hasText(item.getItemName())){
-            //bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[]{"required.item.itemName", "item.default"}, null, null));
             bindingResult.rejectValue("itemName", "required");
-            //addError는 너무길다 더 줄일 수 있는 방법으로 reject를 사용한다. message를 주입가능하다.
-            //rejectValue는 우선순위가 적용된다. field와 required랑 같이 포함하는게 있으면, 그걸 보여주고 없으면, required(default)를 불러온다.
-            //ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName","required") 이것도 같은거임
         }
         if(item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 100000){
             bindingResult.rejectValue("price", "range", new Object[]{1000,100000}, null);
