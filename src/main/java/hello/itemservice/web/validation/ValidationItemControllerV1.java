@@ -45,24 +45,24 @@ public class ValidationItemControllerV1 {
 
     @PostMapping("/add")
     public String addItem(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
-        //BindingResult는 model 뒤(오른쪽)에 선언해야 사용가능하다
         if(!StringUtils.hasText(item.getItemName())){
-            //bindingResult.addError(new FieldError("item", "itemName", "상품 이름은 필수입니다."));
-            bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[]{"required.item.itemName", "item.default"}, null, null));
+            //bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[]{"required.item.itemName", "item.default"}, null, null));
+            bindingResult.rejectValue("itemName", "required");
+            //addError는 너무길다 더 줄일 수 있는 방법으로 reject를 사용한다. message를 주입가능하다.
+            //rejectValue는 우선순위가 적용된다. field와 required랑 같이 포함하는게 있으면, 그걸 보여주고 없으면, required(default)를 불러온다.
+            //ValidationUtils.rejectIfEmptyOrWhitespace(bindingResult, "itemName","required") 이것도 같은거임
         }
         if(item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 100000){
-            bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, new String[]{"range.item.price"}, new Object[]{1000,100000},null));
-
+            bindingResult.rejectValue("price", "range", new Object[]{1000,100000}, null);
         }
         if(item.getQuantity() == null || item.getQuantity() >999){
-            bindingResult.addError(new FieldError("item", "quantity", item.getQuantity(), false, new String[]{"max.item.quantity"}, new Object[]{999},null));
-
+            bindingResult.rejectValue("quantity", "max",  new Object[]{999}, null);
         }
 
         if (item.getPrice() != null && item.getQuantity() != null) {
             int resultPrice = item.getPrice() * item.getQuantity();
             if (resultPrice < 10000) {
-                bindingResult.addError(new ObjectError("item", new String[]{"totalPriceMin"}, new Object[]{10000,resultPrice}, null));
+                bindingResult.reject("totalPriceMin",  new Object[]{10000,resultPrice}, null);
             }
         }
 
