@@ -43,6 +43,15 @@ public class ValidationItemControllerV1 {
     @PostMapping("/add")
     public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
 
+        // Object의 경우에는 @Valid를 사용 못하니, 그냥 이전 버전처럼 사용하는 것도 나쁘지 않음
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", new Object[]{10000,
+                        resultPrice}, null);
+            }
+        }
+
         if(bindingResult.hasErrors()){
             return "validation/v1/addForm";
         }
