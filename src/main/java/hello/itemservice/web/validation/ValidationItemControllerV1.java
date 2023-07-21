@@ -18,13 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ValidationItemControllerV1 {
 
-    private final ItemValidater itemValidater;
     private final ItemRepository itemRepository;
-
-    @InitBinder
-    public void init(WebDataBinder dataBinder){
-        dataBinder.addValidators(itemValidater);
-    } // initBinder를 이용하여 처리 가능 하지만 이 또한 mvcConfig단위에서 설정가능하므로 controller에서는 필요없다.
 
     @GetMapping
     public String items(Model model) {
@@ -48,7 +42,6 @@ public class ValidationItemControllerV1 {
 
     @PostMapping("/add")
     public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
-         //itemValidater.validate(item, bindingResult);
 
         if(bindingResult.hasErrors()){
             return "validation/v1/addForm";
