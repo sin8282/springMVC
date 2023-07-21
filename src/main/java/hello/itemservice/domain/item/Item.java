@@ -14,14 +14,16 @@ import javax.validation.constraints.NotNull;
 //그냥 기존에 resultBinding처럼 해결하는게 낫다.
 public class Item {
 
+    @NotNull(groups = UpdateCheck.class) //수정시에만 적용
     private Long id;
-    @NotBlank(message = "공백x")
+    @NotBlank(groups = {SaveCheck.class, UpdateCheck.class})
     private String itemName;
-    @NotNull
-    @Range(min = 1000, max = 1000000)
+    @NotNull(groups = {SaveCheck.class, UpdateCheck.class})
+    @Range(min = 1000, max = 1000000, groups = {SaveCheck.class,
+            UpdateCheck.class})
     private Integer price;
-    @NotNull
-    @Max(999)
+    @NotNull(groups = {SaveCheck.class, UpdateCheck.class})
+    @Max(value = 9999, groups = SaveCheck.class) //등록시에만 적용
     private Integer quantity;
 
     public Item() {
