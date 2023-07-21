@@ -4,6 +4,8 @@ import hello.itemservice.domain.item.Item;
 import hello.itemservice.domain.item.ItemRepository;
 import hello.itemservice.domain.item.SaveCheck;
 import hello.itemservice.domain.item.UpdateCheck;
+import hello.itemservice.web.validation.form.SaveItemForm;
+import hello.itemservice.web.validation.form.UpdateItemForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,7 +45,13 @@ public class ValidationItemControllerV1 {
     }
 
     @PostMapping("/add")
-    public String addItem(@Validated(SaveCheck.class) @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+    public String addItem(@Validated @ModelAttribute("item") SaveItemForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        Item item = new Item();
+        item.setItemName(form.getItemName());
+        item.setQuantity(form.getQuantity());
+        item.setPrice(form.getPrice());
+
 
         // Object의 경우에는 @Valid를 사용 못하니, 그냥 이전 버전처럼 사용하는 것도 나쁘지 않음
         if (item.getPrice() != null && item.getQuantity() != null) {
@@ -71,7 +79,13 @@ public class ValidationItemControllerV1 {
     }
 
     @PostMapping("/{itemId}/edit")
-    public String edit(@PathVariable Long itemId, @Validated(UpdateCheck.class) @ModelAttribute Item item, BindingResult bindingResult) {
+    public String edit(@PathVariable Long itemId, @Validated @ModelAttribute("item") UpdateItemForm form, BindingResult bindingResult) {
+
+        Item item = new Item();
+        item.setItemName(form.getItemName());
+        item.setQuantity(form.getQuantity());
+        item.setPrice(form.getPrice());
+
 
         if(bindingResult.hasErrors()){
             return "validation/v1/editForm";
