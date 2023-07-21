@@ -5,23 +5,26 @@ import hello.itemservice.domain.item.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/validation/v1/items")
 @RequiredArgsConstructor
 public class ValidationItemControllerV1 {
 
+    private final ItemValidater itemValidater;
     private final ItemRepository itemRepository;
+
+    @InitBinder
+    public void init(WebDataBinder dataBinder){
+        dataBinder.addValidators(itemValidater);
+    } // initBinder를 이용하여 처리 가능 하지만 이 또한 mvcConfig단위에서 설정가능하므로 controller에서는 필요없다.
 
     @GetMapping
     public String items(Model model) {
@@ -44,29 +47,8 @@ public class ValidationItemControllerV1 {
     }
 
     @PostMapping("/add")
-    public String addItem(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
-
-        // typeMissMatch의 경우에도 properties에서 설정 가능하다.
-        if(bindingResult.hasErrors()){
-            return "validation/v1/addForm";
-        }
-
-        if(!StringUtils.hasText(item.getItemName())){
-            bindingResult.rejectValue("itemName", "required");
-        }
-        if(item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 100000){
-            bindingResult.rejectValue("price", "range", new Object[]{1000,100000}, null);
-        }
-        if(item.getQuantity() == null || item.getQuantity() >999){
-            bindingResult.rejectValue("quantity", "max",  new Object[]{999}, null);
-        }
-
-        if (item.getPrice() != null && item.getQuantity() != null) {
-            int resultPrice = item.getPrice() * item.getQuantity();
-            if (resultPrice < 10000) {
-                bindingResult.reject("totalPriceMin",  new Object[]{10000,resultPrice}, null);
-            }
-        }
+    public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+         //itemValidater.validate(item, bindingResult);
 
         if(bindingResult.hasErrors()){
             return "validation/v1/addForm";
