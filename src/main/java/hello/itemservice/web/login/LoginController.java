@@ -2,6 +2,7 @@ package hello.itemservice.web.login;
 
 import hello.itemservice.domain.login.LoginService;
 import hello.itemservice.domain.member.Member;
+import hello.itemservice.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -18,7 +20,10 @@ import javax.validation.Valid;
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
+
     private final LoginService loginService;
+    private final SessionManager sessionManager;
+
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm") LoginForm form) {
         return "login/loginForm";
@@ -36,16 +41,13 @@ public class LoginController {
             return "login/loginForm";
         }
 
-        Cookie idCookie = new Cookie("memberId", String.valueOf(loginMember.getId()));
-        response.addCookie(idCookie);
+        sessionManager.createSession(loginMember, response);
         return "redirect:/";
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletResponse response){
-        Cookie cookie = new Cookie("memberId", null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+    public String logout(HttpServletRequest request){
+        sessionManager.expire(request);
         return "redirect:/";
     }
 }
