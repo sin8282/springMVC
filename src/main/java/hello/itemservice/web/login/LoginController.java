@@ -2,6 +2,7 @@ package hello.itemservice.web.login;
 
 import hello.itemservice.domain.login.LoginService;
 import hello.itemservice.domain.member.Member;
+import hello.itemservice.web.session.SessionConst;
 import hello.itemservice.web.session.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Slf4j
@@ -29,7 +31,7 @@ public class LoginController {
         return "login/loginForm";
     }
     @PostMapping("/login")
-    public String login(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletResponse response) {
+    public String login(@Valid @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
@@ -41,13 +43,21 @@ public class LoginController {
             return "login/loginForm";
         }
 
-        sessionManager.createSession(loginMember, response);
+        //sessionManager.createSession(loginMember, response);
+        //session 관리를 Spring에 이관한다. 기존에는 response에다 담았지만 request로 이관이됨.
+        //response로 보내주는건 tomcat에서 처리를 하게 됨
+        // true: default 있느면 그대로 없으면 생성, false: 있으면 그대로 없으면 null
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+
         return "redirect:/";
     }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request){
-        sessionManager.expire(request);
+        //sessionManager.expire(request);
+        HttpSession session = request.getSession(false);
+        if (session != null ) session.invalidate();
         return "redirect:/";
     }
 }
