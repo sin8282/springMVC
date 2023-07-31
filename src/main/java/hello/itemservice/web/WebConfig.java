@@ -1,5 +1,6 @@
 package hello.itemservice.web;
 
+import hello.itemservice.web.argumentresolver.LoginMemberArgumentResolver;
 import hello.itemservice.web.filter.LogFilter;
 import hello.itemservice.web.filter.LoginCheckFilter;
 import hello.itemservice.web.interceptor.LoginCheckInterceptor;
@@ -7,11 +8,19 @@ import hello.itemservice.web.interceptor.LoginInterceptor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new LoginMemberArgumentResolver());
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
