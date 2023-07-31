@@ -57,7 +57,7 @@ public class LoginController {
     public String logout(HttpServletRequest request){
         //sessionManager.expire(request);
         HttpSession session = request.getSession(false);
-        if (session != null ) session.invalidate();
+        if (session != null) session.invalidate();
         return "redirect:/";
     }
 }
