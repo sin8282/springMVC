@@ -25,7 +25,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
         }
 
-        log.info("preHandle [{}][{}][{}]", uuid, requestURL, handler);
+        log.info("preHandle [{}][{}][{}][{}]", uuid, requestURL, handler, request.getDispatcherType());
         return true;
     }
 
@@ -38,7 +38,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         String requestURL = request.getRequestURI();
         String logId = (String) request.getAttribute(LOG_ID);
-        log.info("afterCompletion [{}][{}]", logId, requestURL);
+        log.info("afterCompletion [{}][{}][{}]", logId, requestURL, request.getDispatcherType());
         if (ex != null) {
             log.error("afterCompletion error!!", ex);
         }
