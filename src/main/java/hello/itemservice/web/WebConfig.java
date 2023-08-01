@@ -1,6 +1,7 @@
 package hello.itemservice.web;
 
 import hello.itemservice.web.argumentresolver.LoginMemberArgumentResolver;
+import hello.itemservice.web.exception.MyExceptionResolver;
 import hello.itemservice.web.filter.LogFilter;
 import hello.itemservice.web.filter.LoginCheckFilter;
 import hello.itemservice.web.interceptor.LoginCheckInterceptor;
@@ -9,6 +10,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,6 +19,14 @@ import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+
+    @Override
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        //구현채가 extend... 말고 configure... 도 있는데 이 경우 내가 지정한 Resolver만 적용 된다 Spring default Handler가 지워지므로
+        //본인이 고수다, 처음부터 구현하겠다하면, 그걸 사용하고 아니면 extend 쓰자.
+        resolvers.add(new MyExceptionResolver());
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
