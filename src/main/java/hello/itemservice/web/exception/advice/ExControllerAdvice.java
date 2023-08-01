@@ -1,21 +1,30 @@
-package hello.itemservice.web.exception.api;
+package hello.itemservice.web.exception.advice;
 
 import hello.itemservice.web.exception.body.ErrorResult;
-import hello.itemservice.web.exception.ex.BadRequestException;
 import hello.itemservice.web.exception.ex.UserException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * // Target all Controllers annotated with @RestController
+ * @ControllerAdvice(annotations = RestController.class)
+ * public class ExampleAdvice1 {}
+ * // Target all Controllers within specific packages
+ * @ControllerAdvice("org.example.controllers")
+ * public class ExampleAdvice2 {}
+ * // Target all Controllers assignable to specific classes
+ * @ControllerAdvice(assignableTypes = {ControllerInterface.class,
+ * AbstractController.class})
+ * public class ExampleAdvice3 {}
+ */
 @Slf4j
-@RestController
-public class ApiExceptionController2 {
+@RestControllerAdvice("hello.itemservice.web.exception.api")
+public class ExControllerAdvice {
 
-    /*
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public ErrorResult illegalExHandler(IllegalArgumentException e) {
@@ -36,26 +45,5 @@ public class ApiExceptionController2 {
         log.error("@ExceptionHandler " , e);
         return new ErrorResult("EX", "내부 오류");
     }
-    */
 
-    @GetMapping("/api2/members/{id}")
-    public MemberDto getMember(@PathVariable("id") String id ) {
-        if (id.equals("ex")) {
-            throw new RuntimeException("잘못된 사용자");
-        }
-        if (id.equals("bad")) {
-            throw new IllegalArgumentException("잘못된 입력 값");
-        }
-        if (id.equals("user-ex")) {
-            throw new UserException("사용자 오류");
-        }
-
-        return new MemberDto(id, "hello " + id);
-    }
-    @Data
-    @AllArgsConstructor
-    static class MemberDto {
-        private String memberId;
-        private String name;
-    }
 }
