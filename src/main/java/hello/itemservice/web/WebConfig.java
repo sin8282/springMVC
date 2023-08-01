@@ -23,8 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
-        //구현채가 extend... 말고 configure... 도 있는데 이 경우 내가 지정한 Resolver만 적용 된다 Spring default Handler가 지워지므로
-        //본인이 고수다, 처음부터 구현하겠다하면, 그걸 사용하고 아니면 extend 쓰자.
+        // Resolver의 마지막 단계
         resolvers.add(new MyExceptionResolver());
     }
 
