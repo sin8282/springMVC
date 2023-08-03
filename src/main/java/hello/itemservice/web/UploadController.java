@@ -7,10 +7,13 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -79,6 +82,27 @@ public class UploadController {
                 log.info("파일 저장 fullPath={}", fullPath);
                 part.write(fullPath);
             }
+        }
+
+        return "multipart/upload-form";
+    }
+
+    @GetMapping("/v3/upload")
+    public String newFileV3(){
+        return "multipart/upload-form";
+    }
+
+    @PostMapping("v3/upload")
+    public String saveFileV3(@RequestParam String itemName, @RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
+
+        log.info("request={}", request);
+        log.info("itemName={}", itemName);
+        log.info("multipartFile={}", file);
+
+        if(!file.isEmpty()) {
+            String fullPath = fileDir + file.getOriginalFilename();
+            log.info("파일 저장 fullPath={}", fullPath);
+            file.transferTo(new File(fullPath));
         }
 
         return "multipart/upload-form";
