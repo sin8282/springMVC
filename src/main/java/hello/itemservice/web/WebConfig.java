@@ -6,9 +6,11 @@ import hello.itemservice.web.filter.LogFilter;
 import hello.itemservice.web.filter.LoginCheckFilter;
 import hello.itemservice.web.interceptor.LoginCheckInterceptor;
 import hello.itemservice.web.interceptor.LoginInterceptor;
+import hello.itemservice.web.typeconverter.*;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,6 +22,17 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        //Spring에서 제공되는 기본 Converter를 이용하므로 아래 두개는 주석 해도 된다.
+        //registry.addConverter(new StringToIntegerConverter());
+        //registry.addConverter(new IntegerToStringConverter());
+
+        registry.addConverter(new StringToIpPortConverter());
+        registry.addConverter(new IpPortToStringConverter());
+
+        registry.addFormatter(new MyNumberFormatter());
+    }
 
     @Override
     public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
@@ -34,6 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        /*
         registry.addInterceptor(new LoginInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
@@ -44,6 +58,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/members/add", "/login", "/logout",
                         "/css/**", "/*.ico", "/error", "/error-page/**", "/api/**", "/api2/**");
+      */
+
     }
 
     //@Bean
